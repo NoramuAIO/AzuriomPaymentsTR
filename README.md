@@ -1,45 +1,4 @@
-# Azuriom PayTR Ödeme Entegrasyonu Eklentisi (PayTR Payment Gateway)
-
-Bu eklenti, Laravel 12 tabanlı **Azuriom CMS** oyun yönetim sistemi için geliştirilmiş, yüksek güvenlikli ve modüler bir PayTR ödeme yöntemi entegrasyonudur. Azuriom Shop (Market) eklentisiyle tam uyumlu çalışarak oyuncularınızın PayTR iFrame API üzerinden güvenli bir şekilde alışveriş yapmasını sağlar.
-
-## ✨ Özellikler
-
-- **PayTR iFrame API Entegrasyonu:** Oyuncular siteden ayrılmadan, güvenli bir iFrame penceresi üzerinden kredi kartı veya banka kartı ile ödeme yapabilir.
-- **Gelişmiş Güvenlik Mimarisi:** En yüksek güvenlik standartları (Double-Spend koruması, timing-safe karşılaştırmalar, log ve token doğrulama) uygulanmıştır.
-- **Çoklu Dil Desteği:** Türkçe ve İngilizce dil dosyaları yerleşik olarak gelir.
-- **Kolay Yönetim Paneli:** Admin paneli üzerinden Merchant ID, Merchant Key ve Merchant Salt bilgileri kolayca yapılandırılabilir.
-- **Test ve Canlı Mod Seçeneği:** PayTR entegrasyonunuzu test etmek için tek tıkla test moduna geçiş imkanı.
-- **Yerel Geliştirme (Localhost) Desteği:** Yerel ortamda çalışırken PayTR'ın public IP zorunluluğunu aşmak için dinamik fallback IP mekanizması içerir.
-
-## 🔒 Güvenlik Sertleştirmesi (Hardening)
-
-Bu eklenti, finansal işlemleri korumak adına aşağıdaki ileri düzey güvenlik önlemlerini barındırır:
-
-* **Zamanlama Güvenli Karşılaştırma (`hash_equals`):** PayTR callback isteklerindeki HMAC imzaları, zamanlama saldırılarına (timing attacks) karşı korumalı olarak doğrulanır.
-* **Double-Spend Koruması:** Eşzamanlı mükerrer bildirimlerin ve sahte harcamaların önüne geçmek için veritabanı işlemlerinde `DB::transaction` ve satır kilitleme (`lockForUpdate()`) kullanılır.
-* **Tutar ve Para Birimi Doğrulaması:** PayTR'dan dönen tutar ile sepet tutarı kuruşu kuruşuna karşılaştırılır; ayrıca ödemenin `SUPPORTED_CURRENCIES` (TRY vb.) kapsamında olup olmadığı denetlenir.
-* **Girdi ve Log Enjeksiyonu Koruması:** Gelen callback parametreleri alfanumerik regex kontrolünden geçirilir. Log dosyalarına yazılmadan önce satır sonu ve kontrol karakterleri temizlenir (`sanitizeLogInput`).
-* **Bilgi Sızıntısı Önleme:** API hata mesajları son kullanıcıya sızdırılmaz, güvenli bir şekilde sistem loglarına kaydedilir.
-* **Eksik Ödeme Yönetimi:** Kaydı bulunamayan ödemelerde bile PayTR'a "OK" yanıtı verilerek sonsuz bildirim döngüleri engellenir ancak sistem yöneticisine kritik log uyarısı düşer.
-
-## 🚀 Kurulum
-
-### 1. Dosya Yapısı
-Eklentinin Azuriom projenizin `plugins/paytrpayment` dizini altında yer aldığından emin olun.
-
-### 2. Logo Eklenmesi
-PayTR logosunun ödeme sayfasında düzgün görünmesi için bir `.svg` logosu eklemeniz gerekir:
-* Bir `paytr.svg` dosyası edinin.
-* Bu dosyayı `plugins/paytrpayment/assets/img/paytr.svg` dizinine yerleştirin.
-
-### 3. Eklentiyi Etkinleştirme ve Önbellek Temizliği
-Eklentiyi `plugins/plugins.json` dosyanıza ekledikten sonra admin panelinde görebilmek için Azuriom'un eklenti önbelleğini temizlemeniz gerekir. Terminalden veya FTP üzerinden şu dosyayı silin:
-```bash
-rm bootstrap/cache/plugins.php```
-
------------
-
- Azuriom PayTR Payment Gateway Plugin
+# Azuriom PayTR Payment Gateway Plugin
 
 This plugin is a high-security, modular PayTR payment gateway integration developed for **Azuriom CMS** (built on Laravel 12). It fully integrates with the Azuriom Shop plugin, allowing your players to securely make purchases via the PayTR iFrame API without leaving your website.
 
