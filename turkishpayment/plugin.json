@@ -2,7 +2,7 @@
     "id": "turkishpayment",
     "name": "Turkish Payment",
     "description": "Add 10 Turkish Payment Gateways to the shop's payment methods.",
-    "version": "1.0.0",
+    "version": "1.1.0",
     "url": "https://azuriom.com",
     "authors": [
         "NoramuStudio"
