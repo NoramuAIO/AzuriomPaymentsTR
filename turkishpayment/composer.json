@@ -1,0 +1,11 @@
+{
+    "name": "azuriom/turkishpayment",
+    "type": "azuriom-plugin",
+    "description": "Add 10 Turkish Payment Gateways to the shop's payment methods.",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Azuriom\\Plugin\\TurkishPayment\\": "src/"
+        }
+    }
+}

@@ -1,0 +1,17 @@
+{
+    "id": "turkishpayment",
+    "name": "Turkish Payment",
+    "description": "Add 10 Turkish Payment Gateways to the shop's payment methods.",
+    "version": "1.0.0",
+    "url": "https://azuriom.com",
+    "authors": [
+        "NoramuStudio"
+    ],
+    "providers": [
+        "\\Azuriom\\Plugin\\TurkishPayment\\Providers\\TurkishPaymentServiceProvider"
+    ],
+    "dependencies": {
+        "shop": "^1.0.0"
+    },
+    "azuriom_api": "1.0.0"
+}
