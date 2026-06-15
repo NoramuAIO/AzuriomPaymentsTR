@@ -1,38 +1,39 @@
-# Turkish Payments Gateway Plugin
+# Azuriom - Turkish Payment (PaymentsTR) Plugin
 
-This plugin is a high-security, modular PayTR payment gateway integration developed for **Azuriom CMS** (built on Laravel 12). It fully integrates with the Azuriom Shop plugin, allowing your players to securely make purchases via the PayTR iFrame API without leaving your website.
+[![Laravel Version](https://img.shields.io/badge/laravel-%5E12.0-red.svg)](https://laravel.com)
+[![PHP Version](https://img.shields.io/badge/php-%5E8.2-blue.svg)](https://php.net)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-## ✨ Features
+Azuriom CMS için geliştirilmiş, Türkiye'deki en popüler 10 farklı Sanal POS ve ödeme kuruluşu altyapısını tek bir modülde birleştiren gelişmiş çoklu ödeme ağ geçidi (Payment Gateway) eklentisidir. 
 
-- **PayTR iFrame API Integration:** Players can securely pay with credit or debit cards through an embedded iFrame window.
-- **Advanced Security Architecture:** Implements industry-standard security measures including double-spend protection, timing-safe hash comparisons, log sanitization, and input validation.
-- **Multi-language Support:** Comes with built-in Turkish and English language files.
-- **Intuitive Admin Panel:** Easily configure your Merchant ID, Merchant Key, and Merchant Salt directly from the admin dashboard.
-- **Test & Production Modes:** Toggle between test mode and live mode with a single click.
-- **Local Development (Localhost) Support:** Includes a dynamic fallback IP mechanism to bypass PayTR's public IP requirement during local development.
+Eski tekli entegrasyonların yerine gelen bu modül, gelişmiş güvenlik katmanları (Security Trait) ve ortak Nestpay soyutlama mimarisi ile hem kod temizliği hem de maksimum işlem güvenliği sağlar.
 
-## 🔒 Security Hardening
+---
 
-To safeguard financial transactions, this plugin incorporates the following enterprise-grade security enhancements:
+## 🚀 Özellikler & Desteklenen Entegrasyonlar
 
-* **Timing-Safe Comparison (`hash_equals`):** HMAC signatures from PayTR callback requests are verified using timing-attack-resistant comparisons.
-* **Double-Spend Protection:** Uses database transactions (`DB::transaction`) and row-locking (`lockForUpdate()`) to prevent concurrent duplicate notifications and fraudulent double-spending.
-* **Amount & Currency Verification:** The exact amount returned by PayTR is cross-referenced with the database record down to the cent, and the currency is verified against `SUPPORTED_CURRENCIES` (e.g., TRY).
-* **Input & Log Injection Protection:** All callback parameters are validated using alphanumeric regular expressions. Data is stripped of line breaks, control characters, and size-constrained before being written to log files (`sanitizeLogInput`).
-* **Information Leakage Prevention:** Raw API error messages are never exposed to the end user; they are securely written to internal system logs instead.
-* **Missing Payment Record Handling:** If a payment record cannot be found, the system still returns an "OK" response to PayTR to prevent infinite retry loops, while logging a critical warning for administrators.
+Modül, aşağıdaki 10 farklı ödeme yöntemini ve Sanal POS altyapısını yerel olarak destekler:
 
-## 🚀 Installation
+* **Ödeme Kuruluşları:** PayTR, Shopier, Paywant, İyzico, Papara
+* **Banka Sanal POS (Nestpay / EST 3D Secure):** İş Bankası, Akbank, Ziraat Bankası
+* **Özel Banka Altyapıları:** Kuveyt Türk, Garanti BBVA
 
-### 1. File Structure
-Ensure that the plugin files are placed under the `plugins/paytrpayment` directory of your Azuriom project.
+### Mimarinin Güçlü Yönleri
+* **Ortak Kalıtım (Inheritance):** Nestpay protokolünü kullanan bankalar (İşbank, Akbank, Ziraat) tek bir abstract sınıfı (`NestpayMethod`) miras alarak kod tekrarını önler.
+* **Merkezi Güvenlik (Trait):** Tüm gateway'ler `HasSecurityFeatures` trait'ini kullanarak aynı yüksek güvenlik standartlarını paylaşır.
 
-### 2. Adding the Logo
-To display the PayTR logo correctly on the checkout page, you need to add an `.svg` logo:
-* Obtain a `paytr.svg` file.
-* Place this file in the following directory: `plugins/paytrpayment/assets/img/paytr.svg`.
+---
 
-### 3. Activating the Plugin & Clearing Cache
-After adding `"paytrpayment"` to your `plugins/plugins.json` file, you must clear Azuriom's plugin cache to make it visible in the admin dashboard. Run the following command in your terminal or delete the file via FTP:
-```bash
-rm bootstrap/cache/plugins.php
+## 🔒 Gelişmiş Güvenlik Sertleştirmesi
+
+Bu eklenti, canlı ortamda karşılaşılabilecek tüm manipülasyon ve dolandırıcılık (fraud) girişimlerine karşı sıfır tolerans prensibiyle tasarlanmıştır:
+
+* **Tutar Manipülasyonu Koruması:** Callback (geri bildirim) esnasında gelen tutar, kuruş bazında `(int) round($payment->price * 100)` formülüyle veritabanındaki orijinal kayıtla eşleştirilir.
+* **Zamanlama Güvenli Hash Karşılaştırması:** Tüm imza ve HMAC doğrulamalarında `===` yerine zamanlama saldırılarını (Timing Attack) engelleyen `hash_equals()` fonksiyonu kullanılır.
+* **Nestpay HASHPARAMS Güvencesi:** Boş `HASHPARAMS` parametresi gönderilerek yapılan bypass açıkları tamamen kapatılmıştır. `microtime` yerine kriptografik olarak güvenli `random_bytes()` kullanılmıştır.
+* **IP Sahteciliği (Spoofing) Koruması:** Sahte `X-Forwarded-For` başlıklarına güvenilmez; sadece gerçek ve doğrulanmış public IP adreslerini baz alan `getSafeServerIp()` metodunu içerir.
+* **Double-Spend (Mükerrer Ödeme) Engelleme:** Eşzamanlı gelen mükerrer webhook bildirimlerini engellemek adına veritabanı işlemlerinde `DB::transaction` ile satır kilitleme (`lockForUpdate()`) uygulanır.
+* **Fraud Filtre Yönetimi:** İyzico ve PayTR gibi dış API'lerin eksik veriler (örn: `N/A`, `0000`) nedeniyle istekleri reddetmesini önlemek için standartlara uygun akıllı "dummy" veriler üretilir.
+* **XSS & JSON Enjeksiyon Koruması:** Sepet öğelerindeki tırnak, parantez ve HTML etiketleri `sanitizeBasketItemName()` ile temizlenerek API kırılmaları ve XSS riskleri önlenir.
+
+---
